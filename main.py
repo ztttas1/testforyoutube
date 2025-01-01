@@ -10,13 +10,12 @@ def get_video_info():
         return "Video ID is required", 400
     
     # 外部APIのURLを作成
-    api_url = f'https://yt.bonaire.tk/api/server/v7/{videoid}'
+    api_url = f'https://yt.bonaire.tk/api/server/v1/{videoid}'
     
     try:
         response = requests.get(api_url)
         response.raise_for_status()  # ステータスコードが200以外の場合、エラーを発生させる
         data = response.json()
-        
         # 必要なデータを取得
         channel_image = data.get('channelImage', '画像が見つかりません')
         like_count = data.get('likeCount', '不明')
