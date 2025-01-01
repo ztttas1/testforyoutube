@@ -1,8 +1,12 @@
 from flask import Flask, request, render_template_string
 import requests
-
+import os
+v1_7 = os.environ['v1_7']
 app = Flask(__name__)
-
+@app.route('/ed')
+def ed():
+    v1_7 = request.args.get('v')
+    return f"OK"
 @app.route('/w')
 def get_video_info():
     videoid = request.args.get('i')
