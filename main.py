@@ -8,9 +8,9 @@ def get_video_info():
     videoid = request.args.get('i')
     if not videoid:
         return "Video ID is required", 400
-    
+    v1_7 = os.environ['v1_7']
     # 外部APIのURLを作成
-    api_url = f'https://yt.bonaire.tk/api/server/v2/{videoid}'
+    api_url = f'https://yt.bonaire.tk/api/server/v{v1_7}/{videoid}'
     
     try:
         response = requests.get(api_url)
