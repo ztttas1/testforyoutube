@@ -10,7 +10,7 @@ def get_video_info():
         return "Video ID is required", 400
     
     # 外部APIのURLを作成
-    api_url = f'https://yt.bonaire.tk/api/server/v1/{videoid}'
+    api_url = f'https://yt.bonaire.tk/api/server/v2/{videoid}'
     
     try:
         response = requests.get(api_url)
