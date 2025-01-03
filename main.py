@@ -7,7 +7,6 @@ html_template = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>リダイレクトサンプル</title>
     <script>
         function redirectToURL() {
             const input = document.getElementById('inputField').value;
@@ -17,9 +16,9 @@ html_template = """
     </script>
 </head>
 <body>
-    <h1>リダイレクトページ</h1>
+    <h1>検索</h1>
     <input type="text" id="inputField" placeholder="文字列を入力してください">
-    <button onclick="redirectToURL()">リダイレクト</button>
+    <button onclick="redirectToURL()">検索</button>
 </body>
 </html>
 """
