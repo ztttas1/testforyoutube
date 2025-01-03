@@ -24,15 +24,16 @@ html_template = """
 </html>
 """
 
-@app.route('/')
-def index():
-    return render_template_string(html_template)
+
 v1_7 = os.environ['v1_7']
 app = Flask(__name__)
 @app.route('/ed')
 def ed():
     v1_7 = request.args.get('v')
     return f"OK"
+@app.route('/')
+def index():
+    return render_template_string(html_template)
 @app.route('/w')
 def get_video_info():
     videoid = request.args.get('i')
