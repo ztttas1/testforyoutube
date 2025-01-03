@@ -47,6 +47,57 @@ def get_video_info():
     
     except requests.exceptions.RequestException as e:
         return f"Error fetching data: {str(e)}", 500
+@app.route('/s')
+def search_videos():
+    search_word = request.args.get('w')
+    if not search_word:
+        return "Search word is required", 400
+    
+    # 検索APIのURL
+    api_url = f'https://ytsr.bonaire.tk/apis?q={search_word}'
+    
+    try:
+        response = requests.get(api_url)
+        response.raise_for_status()  # ステータスコードが200以外の場合、エラーを発生させる
+        data = response.json()
+        
+        # HTMLテンプレートの作成
+        html_content = "<h1>検索結果</h1>"
+        
+        for item in data:
+            if item['type'] == 'video':
+                title = item['title']
+                video_url = item['url']
+                thumbnail_url = item['bestThumbnail']['url']
+                views = item.get('views', '不明')
+                duration = item.get('duration', '不明')
+                
+                html_content += f"""
+                <div>
+                    <h2><a href="{video_url}">{title}</a></h2>
+                    <img src="{thumbnail_url}" alt="{title}">
+                    <p>Views: {views}</p>
+                    <p>Duration: {duration}</p>
+                </div>
+                """
+            elif item['type'] == 'channel':
+                channel_name = item['name']
+                channel_url = item['url']
+                channel_image = item['bestAvatar']['url']
+                subscribers = item.get('subscribers', '不明')
+                
+                html_content += f"""
+                <div>
+                    <h2><a href="{channel_url}">{channel_name}</a></h2>
+                    <img src="{channel_image}" alt="{channel_name}">
+                    <p>Subscribers: {subscribers}</p>
+                    <p>Description: {item.get('descriptionShort', '不明')}</p>
+                </div>
+                """
+        
+        return render_template_string(html_content)
 
+    except requests.exceptions.RequestException as e:
+        return f"Error fetching data: {str(e)}", 500
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080,debug=True)
