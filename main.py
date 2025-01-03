@@ -33,9 +33,6 @@ app = Flask(__name__)
 def ed():
     v1_7 = request.args.get('v')
     return f"OK"
-@app.route('/')
-def home():
-    return html_template
 @app.route('/w')
 def get_video_info():
     videoid = request.args.get('i')
