@@ -1,12 +1,41 @@
 from flask import Flask, request, render_template_string
 import requests
 import os
+html_template = """
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>リダイレクトサンプル</title>
+    <script>
+        function redirectToURL() {
+            const input = document.getElementById('inputField').value;
+            const url = `/s?w=${encodeURIComponent(input)}`;
+            window.location.href = url;
+        }
+    </script>
+</head>
+<body>
+    <h1>リダイレクトページ</h1>
+    <input type="text" id="inputField" placeholder="文字列を入力してください">
+    <button onclick="redirectToURL()">リダイレクト</button>
+</body>
+</html>
+"""
+
+@app.route('/')
+def index():
+    return render_template_string(html_template)
 v1_7 = os.environ['v1_7']
 app = Flask(__name__)
 @app.route('/ed')
 def ed():
     v1_7 = request.args.get('v')
     return f"OK"
+@app.route('/')
+def home():
+    return html_template
 @app.route('/w')
 def get_video_info():
     videoid = request.args.get('i')
@@ -99,5 +128,6 @@ def search_videos():
 
     except requests.exceptions.RequestException as e:
         return f"Error fetching data: {str(e)}", 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080,debug=True)
