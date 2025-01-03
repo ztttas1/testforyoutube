@@ -67,14 +67,14 @@ def search_videos():
         for item in data:
             if item['type'] == 'video':
                 title = item['title']
-                video_url = item['url']
+                video_id = item['id']  # 動画のIDを取得
                 thumbnail_url = item['bestThumbnail']['url']
                 views = item.get('views', '不明')
                 duration = item.get('duration', '不明')
                 
                 html_content += f"""
                 <div>
-                    <h2><a href="{video_url}">{title}</a></h2>
+                    <h2><a href="/w?i={video_id}">{title}</a></h2>
                     <img src="{thumbnail_url}" alt="{title}">
                     <p>Views: {views}</p>
                     <p>Duration: {duration}</p>
