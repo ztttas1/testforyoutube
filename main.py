@@ -73,7 +73,7 @@ def search_videos():
         return "Search word is required", 400
     
     # 検索APIのURL
-    api_url = f'https://ytsr.bonaire.tk/apis?q={search_word}'
+    api_url = f'https://invidious.f5.si/api/v1/search?q={search_word}'
     
     try:
         response = requests.get(api_url)
