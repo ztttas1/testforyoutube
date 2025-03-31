@@ -73,7 +73,7 @@ def search_videos():
     if not search_word:
         return "word parameter is required", 400
 
-    api_url = f"https://docs.invidious.io/api/v1/search?q={search_word}"
+    api_url = f"https://invidious.f5.si/api/v1/search?q={search_word}"
 
     try:
         response = requests.get(api_url)
