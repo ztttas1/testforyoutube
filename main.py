@@ -66,45 +66,6 @@ def get_stream_url():
     except requests.exceptions.RequestException as e:
         return f"Error: {str(e)}", 500
 
-@app.route('/s')
-def search_videos():
-    search_word = request.args.get('word')
-    if not search_word:
-        return "Search word is required", 400
-    
-    # 検索APIのURL
-    api_url = f'https://invidious.f5.si/api/v1/search?q={search_word}'
-    
-    try:
-        response = requests.get(api_url)
-        response.raise_for_status()  # ステータスコードが200以外の場合、エラーを発生させる
-        data = response.json()
-        
-        # HTMLテンプレートの作成
-        html_content = "<h1>検索結果</h1>"
-        
-        for item in data:
-            if item['type'] == 'video':
-                title = item['title']
-                video_id = item['id']  # 動画のIDを取得
-                thumbnail_url = item['bestThumbnail']['url']
-                views = item.get('views', '不明')
-                duration = item.get('duration', '不明')
-                
-                html_content += f"""
-                <div>
-                    <h2><a href="/w?i={video_id}">{title}</a></h2>
-                    <img src="{thumbnail_url}" alt="{title}">
-                    <p>Views: {views}</p>
-                    <p>Duration: {duration}</p>
-                </div>
-                """
-            elif item['type'] == 'channel':
-                html_content = "Error"
-        
-        return render_template_string(html_content)
 
-    except requests.exceptions.RequestException as e:
-        return f"Error fetching data: {str(e)}", 500
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
