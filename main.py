@@ -24,9 +24,35 @@ def get_stream_url():
 
         # 'stream_url'を取得
         stream_url = data.get('stream_url')
+        channel_image = data.get('channelImage')
+        channel_name = data.get('channelName')
+        video_des = data.get('videoDes')
 
+        # HTMLテンプレートを作成
+        html_content = f"""
+        <!doctype html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>動画情報</title>
+        </head>
+        <body>
+            <h1>動画情報</h1>
+            <video width="640" height="360" controls>
+                <source src="{stream_url}" type="video/mp4">
+                お使いのブラウザは動画タグに対応していません。
+            </video>
+            <div>
+                <img src="{channel_image}" alt="Channel Image" style="float:left; margin-right:10px;">
+                <p><strong>{channel_name}</strong></p>
+                <p>{video_des}</p>
+            </div>
+        </body>
+        </html>
+        """
         if stream_url:
-            return jsonify({"stream_url": stream_url})
+            return jsonify(html)
         else:
             return jsonify({"error": "stream_url not found"}), 404
             
