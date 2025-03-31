@@ -100,19 +100,7 @@ def search_videos():
                 </div>
                 """
             elif item['type'] == 'channel':
-                channel_name = item['name']
-                channel_url = item['url']
-                channel_image = item['bestAvatar']['url']
-                subscribers = item.get('subscribers', '不明')
-                
-                html_content += f"""
-                <div>
-                    <h2><a href="{channel_url}">{channel_name}</a></h2>
-                    <img src="{channel_image}" alt="{channel_name}">
-                    <p>Subscribers: {subscribers}</p>
-                    <p>Description: {item.get('descriptionShort', '不明')}</p>
-                </div>
-                """
+                html_content = "Error"
         
         return render_template_string(html_content)
 
