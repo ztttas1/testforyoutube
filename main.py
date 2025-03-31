@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, render_template_string
 import requests
 
 app = Flask(__name__)
@@ -9,7 +9,7 @@ def get_stream_url():
     param_id = request.args.get('id')
 
     if not param_id:
-        return jsonify({"error": "id parameter is required"}), 400
+        return "id parameter is required", 400
 
     # 外部APIのURLを設定
     api_url = f"https://natural-voltaic-titanium.glitch.me/api/{param_id}"
@@ -22,7 +22,7 @@ def get_stream_url():
         # JSONデータを取得
         data = response.json()
 
-        # 'stream_url'を取得
+        # 必要な情報を取得
         stream_url = data.get('stream_url')
         channel_image = data.get('channelImage')
         channel_name = data.get('channelName')
@@ -51,13 +51,12 @@ def get_stream_url():
         </body>
         </html>
         """
-        if stream_url:
-            return jsonify(html_content)
-        else:
-            return jsonify({"error": "stream_url not found"}), 404
-            
+
+        return render_template_string(html_content)
+
     except requests.exceptions.RequestException as e:
-        return jsonify({"error": str(e)}), 500
+        return f"Error: {str(e)}", 500
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080,debug=True)
