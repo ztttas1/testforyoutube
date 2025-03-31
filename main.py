@@ -52,7 +52,7 @@ def get_stream_url():
         </html>
         """
         if stream_url:
-            return jsonify(html)
+            return jsonify(html_content)
         else:
             return jsonify({"error": "stream_url not found"}), 404
             
