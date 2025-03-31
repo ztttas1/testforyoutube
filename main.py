@@ -27,6 +27,7 @@ def get_stream_url():
         channel_image = data.get('channelImage')
         channel_name = data.get('channelName')
         video_des = data.get('videoDes')
+        video_title = data.get('videoTitle')
 
         # HTMLテンプレートを作成
         html_content = f"""
@@ -36,6 +37,20 @@ def get_stream_url():
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>動画情報</title>
+            <style>
+                body {{
+                    text-align: center; /* テキストを中央揃え */
+                }}
+                img {{
+                    width: 100px; /* 画像サイズを小さくする */
+                    height: auto;
+                }}
+                .container {{
+                    display: inline-block; /* 中央寄せのためにインラインブロックにする */
+                    text-align: left; /* 左寄せにする */
+                    margin-top: 20px; /* 上部のマージンを追加 */
+                }}
+            </style>
         </head>
         <body>
             <h1>動画情報</h1>
@@ -43,8 +58,9 @@ def get_stream_url():
                 <source src="{stream_url}" type="video/mp4">
                 お使いのブラウザは動画タグに対応していません。
             </video>
-            <div>
+            <div class="container">
                 <img src="{channel_image}" alt="Channel Image" style="float:left; margin-right:10px;">
+                <p><strong>{video_title}</strong></p>
                 <p><strong>{channel_name}</strong></p>
                 <p>{video_des}</p>
             </div>
@@ -56,6 +72,7 @@ def get_stream_url():
 
     except requests.exceptions.RequestException as e:
         return f"Error: {str(e)}", 500
+
 
 
 if __name__ == '__main__':
