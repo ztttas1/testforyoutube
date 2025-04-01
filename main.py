@@ -11,7 +11,7 @@ INVIDIOUS_API_URL = "https://" + os.environ.get('INVIDIOUS',) + "/api/v1"
 # BASIC認証のユーザー名とパスワード
 USERNAME = os.environ.get('USERNAME', 'ztttas1')
 PASSWORD = os.environ.get('PASSWORD', 'pas')
-
+SEARCH = os.environ.get('SEARCH', '10')
 def check_auth(username, password):
     """認証情報を確認する関数"""
     return username == USERNAME and password == PASSWORD
