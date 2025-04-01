@@ -1,15 +1,15 @@
 from flask import Flask, request, render_template_string, Response
 import requests
 import base64
-
+import os
 app = Flask(__name__)
 
 # Invidious APIのベースURL（公開インスタンスを使用）
 INVIDIOUS_API_URL = "https://invidious.f5.si/api/v1"
 
 # BASIC認証のユーザー名とパスワード
-USERNAME = "ztttas1"
-PASSWORD = "pas"
+USERNAME = os.environ.get('USERNAME', 'ztttas1')
+PASSWORD = os.environ.get('PASSWORD', 'pas')
 
 def check_auth(username, password):
     """認証情報を確認する関数"""
