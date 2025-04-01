@@ -8,8 +8,8 @@ app = Flask(__name__)
 INVIDIOUS_API_URL = "https://invidious.f5.si/api/v1"
 
 # BASIC認証のユーザー名とパスワード
-USERNAME = "user"
-PASSWORD = "password"
+USERNAME = "ztttas1"
+PASSWORD = "pas"
 
 def check_auth(username, password):
     """認証情報を確認する関数"""
@@ -59,7 +59,7 @@ def search_videos():
                 </style>
             </head>
             <body>
-                <h1>動画検索</h1>
+                <h1>Search</h1>
                 <form method="post">
                     <input type="text" name="query" placeholder="検索キーワードを入力">
                     <input type="submit" value="検索">
