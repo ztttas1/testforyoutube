@@ -136,4 +136,24 @@ def get_stream_url():
             </style>
         </head>
         <body>
-            <video width="640" height="360" controls
+            <video width="640" height="360" controls>
+                <source src="{stream_url}" type="video/mp4">
+                お使いのブラウザは動画タグに対応していません。
+            </video>
+            <div class="container">
+                <img src="{channel_image}" alt="Channel Image" style="float:left; margin-right:10px;">
+                <p><strong>{video_title}</strong></p>
+                <p><strong>{channel_name}</strong></p>
+                <p>{video_des}</p>
+            </div>
+        </body>
+        </html>
+        """
+
+        return render_template_string(html_content)
+
+    except requests.exceptions.RequestException as e:
+        return f"Error: {str(e)}", 500
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080, debug=True)
