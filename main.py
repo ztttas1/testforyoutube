@@ -3,6 +3,86 @@ import requests
 
 app = Flask(__name__)
 
+# Invidious APIのベースURL（公開インスタンスを使用）
+INVIDIOUS_API_URL = "https://inv.tux.pizza/api/v1"
+
+@app.route('/', methods=['GET', 'POST'])
+def search_videos():
+    if request.method == 'POST':
+        query = request.form.get('query')
+        if not query:
+            return "検索キーワードを入力してください", 400
+        
+        # Invidious APIで動画を検索
+        search_url = f"{INVIDIOUS_API_URL}/search?q={query}&type=video"
+        try:
+            response = requests.get(search_url)
+            response.raise_for_status()
+            results = response.json()
+
+            # 検索結果をHTMLで表示
+            html_content = """
+            <!doctype html>
+            <html lang="ja">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>検索結果</title>
+                <style>
+                    body { text-align: center; }
+                    .result { margin: 20px; text-align: left; display: inline-block; }
+                    img { width: 120px; height: auto; float: left; margin-right: 10px; }
+                </style>
+            </head>
+            <body>
+                <h1>動画検索</h1>
+                <form method="post">
+                    <input type="text" name="query" placeholder="検索キーワードを入力">
+                    <input type="submit" value="検索">
+                </form>
+                <h2>検索結果</h2>
+            """
+            for video in results[:5]:  # 上位5件を表示
+                video_id = video.get('videoId')
+                title = video.get('title')
+                thumbnail = video.get('videoThumbnails')[0].get('url')
+                html_content += f"""
+                <div class="result">
+                    <a href="/w?id={video_id}">
+                        <img src="{thumbnail}" alt="thumbnail">
+                        <p><strong>{title}</strong></p>
+                    </a>
+                </div>
+                """
+            html_content += """
+            </body>
+            </html>
+            """
+            return render_template_string(html_content)
+
+        except requests.exceptions.RequestException as e:
+            return f"検索エラー: {str(e)}", 500
+
+    # GETリクエストの場合は検索フォームのみ表示
+    html_content = """
+    <!doctype html>
+    <html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>動画検索</title>
+    </head>
+    <body>
+        <h1>動画検索</h1>
+        <form method="post">
+            <input type="text" name="query" placeholder="検索キーワードを入力">
+            <input type="submit" value="検索">
+        </form>
+    </body>
+    </html>
+    """
+    return render_template_string(html_content)
+
 @app.route('/w', methods=['GET'])
 def get_stream_url():
     param_id = request.args.get('id')
@@ -65,7 +145,6 @@ def get_stream_url():
 
     except requests.exceptions.RequestException as e:
         return f"Error: {str(e)}", 500
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
