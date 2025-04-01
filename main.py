@@ -42,16 +42,23 @@ def search_videos():
                 </form>
                 <h2>検索結果</h2>
             """
-            for video in results[:5]:  # 上位5件を表示
+            # 修正点1: 表示する動画数を5件から10件に変更
+            for video in results[:10]:  # 上位10件を表示
                 video_id = video.get('videoId')
                 title = video.get('title')
                 # videoThumbnailsが存在するか確認
                 thumbnails = video.get('videoThumbnails')
-                thumbnail = thumbnails[0].get('url') if thumbnails and len(thumbnails) > 0 else "https://via.placeholder.com/120"  # デフォルト画像
+                if thumbnails and len(thumbnails) > 0:
+                    thumbnail_url = thumbnails[0].get('url')
+                    # 修正点2: URLが相対パスの場合にドメインを追加
+                    if thumbnail_url.startswith('/'):
+                        thumbnail_url = "https://img.youtube.com" + thumbnail_url
+                else:
+                    thumbnail_url = "https://via.placeholder.com/120"  # デフォルト画像
                 html_content += f"""
                 <div class="result">
                     <a href="/w?id={video_id}">
-                        <img src="{thumbnail}" alt="thumbnail">
+                        <img src="{thumbnail_url}" alt="thumbnail">
                         <p><strong>{title}</strong></p>
                     </a>
                 </div>
@@ -129,24 +136,4 @@ def get_stream_url():
             </style>
         </head>
         <body>
-            <video width="640" height="360" controls>
-                <source src="{stream_url}" type="video/mp4">
-                お使いのブラウザは動画タグに対応していません。
-            </video>
-            <div class="container">
-                <img src="{channel_image}" alt="Channel Image" style="float:left; margin-right:10px;">
-                <p><strong>{video_title}</strong></p>
-                <p><strong>{channel_name}</strong></p>
-                <p>{video_des}</p>
-            </div>
-        </body>
-        </html>
-        """
-
-        return render_template_string(html_content)
-
-    except requests.exceptions.RequestException as e:
-        return f"Error: {str(e)}", 500
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+            <video width="640" height="360" controls
