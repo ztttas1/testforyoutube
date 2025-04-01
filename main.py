@@ -183,7 +183,7 @@ def get_stream_url():
             return render_template_string(html_content)
 
         except requests.exceptions.RequestException as e:
-            return f"Error: {str(e)}", 500
+            return f"Error: {str(e)}<br><form method="post"><select name="server_index">{''.join(f'<option value="{i}">{i}: {server}</option>' for i, server in enumerate(SERVER_LIST))}</select><input type="hidden" name="id" value="{param_id}"><input type="submit" value="サーバー変更"></form>", 500
 
     # GETリクエストの場合はデフォルトサーバー（0番目）を使用
     api_url = f"{SERVER_LIST[0]}/api/{param_id}"
@@ -238,6 +238,6 @@ def get_stream_url():
         return render_template_string(html_content)
 
     except requests.exceptions.RequestException as e:
-        return f"Error: {str(e)}", 500
+        return f"Error: {str(e)}<br><form method="post"><select name="server_index">{''.join(f'<option value="{i}">{i}: {server}</option>' for i, server in enumerate(SERVER_LIST))}</select><input type="hidden" name="id" value="{param_id}"><input type="submit" value="サーバー変更"></form>", 500
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
