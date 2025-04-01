@@ -10,6 +10,8 @@ services:
     sync: false
   - key: PASSWORD
     sync: false
+  - key: INVIDIOUS
+    sync: false
   region: singapore
   buildCommand: pip install flask & pip install requests
   startCommand: python3 main.py
