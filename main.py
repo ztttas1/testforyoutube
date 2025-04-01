@@ -1,10 +1,34 @@
-from flask import Flask, request, render_template_string
+from flask import Flask, request, render_template_string, Response
 import requests
+import base64
 
 app = Flask(__name__)
 
 # Invidious APIのベースURL（公開インスタンスを使用）
 INVIDIOUS_API_URL = "https://invidious.f5.si/api/v1"
+
+# BASIC認証のユーザー名とパスワード
+USERNAME = "user"
+PASSWORD = "password"
+
+def check_auth(username, password):
+    """認証情報を確認する関数"""
+    return username == USERNAME and password == PASSWORD
+
+def authenticate():
+    """認証失敗時に401レスポンスを返す関数"""
+    return Response(
+        'Could not verify your access level for that URL.\n'
+        'You have to login with proper credentials', 401,
+        {'WWW-Authenticate': 'Basic realm="Login Required"'}
+    )
+
+@app.before_request
+def require_auth():
+    """すべてのリクエストに対して認証を要求"""
+    auth = request.authorization
+    if not auth or not check_auth(auth.username, auth.password):
+        return authenticate()
 
 @app.route('/', methods=['GET', 'POST'])
 def search_videos():
@@ -42,17 +66,11 @@ def search_videos():
                 </form>
                 <h2>検索結果</h2>
             """
-            # 修正点1: 表示する動画数を5件から10件に変更
             for video in results[:10]:  # 上位10件を表示
                 video_id = video.get('videoId')
                 title = video.get('title')
-                # videoThumbnailsが存在するか確認
                 thumbnails = video.get('videoThumbnails')
                 if thumbnails and len(thumbnails) > 0:
-                    #thumbnail_url = thumbnails[0].get('url')
-                    # 修正点2: URLが相対パスの場合にドメインを追加
-                    #if thumbnail_url.startswith('/'):
-                    #    thumbnail_url = "https://img.youtube.com" + thumbnail_url
                     thumbnail_url = f"https://img.youtube.com/vi/{video_id}/0.jpg"
                 else:
                     thumbnail_url = "https://via.placeholder.com/120"  # デフォルト画像
