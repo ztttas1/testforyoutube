@@ -67,7 +67,7 @@ def search_videos():
                 </form>
                 <h2>検索結果</h2>
             """
-            for video in results[:10]:  # 上位10件を表示
+            for video in results[:SEARCH]:
                 video_id = video.get('videoId')
                 title = video.get('title')
                 thumbnails = video.get('videoThumbnails')
