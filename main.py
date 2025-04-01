@@ -1,3 +1,4 @@
+# by ztttas1
 from flask import Flask, request, render_template_string, Response
 import requests
 import base64
@@ -5,7 +6,7 @@ import os
 app = Flask(__name__)
 
 # Invidious APIのベースURL（公開インスタンスを使用）
-INVIDIOUS_API_URL = "https://invidious.f5.si/api/v1"
+INVIDIOUS_API_URL = "https://" + os.environ.get('INVIDIOUS',) + "/api/v1"
 
 # BASIC認証のユーザー名とパスワード
 USERNAME = os.environ.get('USERNAME', 'ztttas1')
