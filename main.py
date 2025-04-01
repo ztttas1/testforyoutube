@@ -11,7 +11,6 @@ SERVER_LIST = ['https://natural-voltaic-titanium.glitch.me','https://wtserver3.g
 # BASIC認証のユーザー名とパスワード
 USERNAME = os.environ.get('USERNAME', 'ztttas1')
 PASSWORD = os.environ.get('PASSWORD', 'pas')
-SEARCH = os.environ.get('SEARCH', '10')
 def check_auth(username, password):
     """認証情報を確認する関数"""
     return username == USERNAME and password == PASSWORD
@@ -67,7 +66,7 @@ def search_videos():
                 </form>
                 <h2>検索結果</h2>
             """
-            for video in results[:20]:
+            for video in results[:40]:
                 video_id = video.get('videoId')
                 title = video.get('title')
                 thumbnails = video.get('videoThumbnails')
