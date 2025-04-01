@@ -4,7 +4,7 @@ import requests
 app = Flask(__name__)
 
 # Invidious APIのベースURL（公開インスタンスを使用）
-INVIDIOUS_API_URL = "https://invdious.f5.si/api/v1"
+INVIDIOUS_API_URL = "https://invidious.f5.si/api/v1"
 
 @app.route('/', methods=['GET', 'POST'])
 def search_videos():
