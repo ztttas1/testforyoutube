@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 # Invidious APIのベースURL（公開インスタンスを使用）
 INVIDIOUS_API_URL = "https://" + os.environ.get('INVIDIOUS',) + "/api/v1"
-
+SERVER_LIST = ['https://natural-voltaic-titanium.glitch.me','https://wtserver3.glitch.me','https://wtserver1.glitch.me','https://wtserver2.glitch.me','https://watawata8.glitch.me','https://watawata7.glitch.me','https://watawata37.glitch.me','https://wataamee.glitch.me','https://watawatawata.glitch.me','https://amenable-charm-lute.glitch.me','https://battle-deciduous-bear.glitch.me','https://productive-noon-van.glitch.me','https://balsam-secret-fine.glitch.me']
 # BASIC認証のユーザー名とパスワード
 USERNAME = os.environ.get('USERNAME', 'ztttas1')
 PASSWORD = os.environ.get('PASSWORD', 'pas')
@@ -113,14 +113,80 @@ def search_videos():
     """
     return render_template_string(html_content)
 
-@app.route('/w', methods=['GET'])
+@app.route('/w', methods=['GET', 'POST'])
 def get_stream_url():
     param_id = request.args.get('id')
 
     if not param_id:
         return "id parameter is required", 400
 
-    api_url = f"https://natural-voltaic-titanium.glitch.me/api/{param_id}"
+    if request.method == 'POST':
+        server_index = request.form.get('server_index')
+        try:
+            server_index = int(server_index)
+            if 0 <= server_index < len(SERVER_LIST):
+                selected_server = SERVER_LIST[server_index]
+            else:
+                return "Invalid server index", 400
+        except (ValueError, TypeError):
+            return "Server index must be a number", 400
+
+        api_url = f"{selected_server}/api/{param_id}"
+
+        try:
+            response = requests.get(api_url)
+            response.raise_for_status()
+
+            data = response.json()
+
+            stream_url = data.get('stream_url')
+            channel_image = data.get('channelImage')
+            channel_name = data.get('channelName')
+            video_des = data.get('videoDes')
+            video_title = data.get('videoTitle')
+
+            html_content = f"""
+            <!doctype html>
+            <html lang="ja">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Video</title>
+                <style>
+                    body {{ text-align: center; }}
+                    img {{ width: 100px; height: auto; }}
+                    .container {{ display: inline-block; text-align: left; margin-top: 20px; }}
+                </style>
+            </head>
+            <body>
+                <video width="640" height="360" controls>
+                    <source src="{stream_url}" type="video/mp4">
+                    お使いのブラウザは動画タグに対応していません。
+                </video>
+                <div class="container">
+                    <img src="{channel_image}" alt="Channel Image" style="float:left; margin-right:10px;">
+                    <p><strong>{video_title}</strong></p>
+                    <p><strong>{channel_name}</strong></p>
+                    <p>{video_des}</p>
+                </div>
+                <h3>サーバー選択</h3>
+                <form method="post">
+                    <select name="server_index">
+                        {''.join(f'<option value="{i}">{i}: {server}</option>' for i, server in enumerate(SERVER_LIST))}
+                    </select>
+                    <input type="hidden" name="id" value="{param_id}">
+                    <input type="submit" value="サーバー変更">
+                </form>
+            </body>
+            </html>
+            """
+            return render_template_string(html_content)
+
+        except requests.exceptions.RequestException as e:
+            return f"Error: {str(e)}", 500
+
+    # GETリクエストの場合はデフォルトサーバー（0番目）を使用
+    api_url = f"{SERVER_LIST[0]}/api/{param_id}"
 
     try:
         response = requests.get(api_url)
@@ -142,18 +208,9 @@ def get_stream_url():
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Video</title>
             <style>
-                body {{
-                    text-align: center;
-                }}
-                img {{
-                    width: 100px;
-                    height: auto;
-                }}
-                .container {{
-                    display: inline-block;
-                    text-align: left;
-                    margin-top: 20px;
-                }}
+                body {{ text-align: center; }}
+                img {{ width: 100px; height: auto; }}
+                .container {{ display: inline-block; text-align: left; margin-top: 20px; }}
             </style>
         </head>
         <body>
@@ -167,14 +224,20 @@ def get_stream_url():
                 <p><strong>{channel_name}</strong></p>
                 <p>{video_des}</p>
             </div>
+            <h3>サーバー選択</h3>
+            <form method="post">
+                <select name="server_index">
+                    {''.join(f'<option value="{i}">{i}: {server}</option>' for i, server in enumerate(SERVER_LIST))}
+                </select>
+                <input type="hidden" name="id" value="{param_id}">
+                <input type="submit" value="サーバー変更">
+            </form>
         </body>
         </html>
         """
-
         return render_template_string(html_content)
 
     except requests.exceptions.RequestException as e:
         return f"Error: {str(e)}", 500
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
