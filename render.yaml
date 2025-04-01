@@ -1,0 +1,16 @@
+# Exported from Render on 2025-04-01T06:32:27Z
+services:
+- type: web
+  name: wa-ztttas1
+  runtime: python
+  repo: https://github.com/ztttas1/testforyoutube
+  plan: free
+  envVars:
+  - key: USERNAME
+    sync: false
+  - key: PASSWORD
+    sync: false
+  region: singapore
+  buildCommand: pip install flask & pip install requests
+  startCommand: python3 main.py
+version: "1"
