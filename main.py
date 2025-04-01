@@ -27,7 +27,7 @@ def search_videos():
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>検索結果</title>
+                <title>Search</title>
                 <style>
                     body { text-align: center; }
                     .result { margin: 20px; text-align: left; display: inline-block; }
@@ -49,10 +49,11 @@ def search_videos():
                 # videoThumbnailsが存在するか確認
                 thumbnails = video.get('videoThumbnails')
                 if thumbnails and len(thumbnails) > 0:
-                    thumbnail_url = thumbnails[0].get('url')
+                    #thumbnail_url = thumbnails[0].get('url')
                     # 修正点2: URLが相対パスの場合にドメインを追加
-                    if thumbnail_url.startswith('/'):
-                        thumbnail_url = "https://img.youtube.com" + thumbnail_url
+                    #if thumbnail_url.startswith('/'):
+                    #    thumbnail_url = "https://img.youtube.com" + thumbnail_url
+                    thumbnail_url = f"https://img.youtube.com/vi/{video_id}/0.jpg"
                 else:
                     thumbnail_url = "https://via.placeholder.com/120"  # デフォルト画像
                 html_content += f"""
@@ -79,14 +80,15 @@ def search_videos():
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>動画検索</title>
+        <title>Home</title>
     </head>
     <body>
-        <h1>動画検索</h1>
+        <h1>Search</h1>
         <form method="post">
-            <input type="text" name="query" placeholder="検索キーワードを入力">
+            <input type="text" name="query" placeholder="Search word">
             <input type="submit" value="検索">
         </form>
+        <p>製作:ztttas1<br>動画:わかめtube<br>検索:Invidious</p>
     </body>
     </html>
     """
@@ -119,7 +121,7 @@ def get_stream_url():
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>動画情報</title>
+            <title>Video</title>
             <style>
                 body {{
                     text-align: center;
