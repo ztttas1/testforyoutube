@@ -14,4 +14,5 @@ python3 main.py
 "USERNAME":BASIC認証のuser,未記入の場合"ztttas1"
 <br>"PASSWORD":BASIC認証のパスワード,未記入の場合"pas"
 <br>"INVIDIOUS":必須,検索に使用するInvidious,"https://"と最後の"/"を消してドメインの部分だけにして入力
-<br>Renderのブループリントを使用する場合名前の設定の記入欄の下に環境変数の欄があるはずです。
+<br>Renderのブループリントを使用する場合名前の設定の記入欄の下に環境変数の欄があるはずです。<br>
+既に作成しているものは作り直すかEnvironmentから手動で作成してください
