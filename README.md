@@ -1,3 +1,4 @@
+# 実行と使用は自己責任で
 <img src="https://img.shields.io/badge/-Python-000000.svg?logo=python&style=for-the-badge">
 <img src="https://img.shields.io/badge/-flask-000000.svg?logo=flask&style=for-the-badge">
 Build
