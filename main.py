@@ -162,14 +162,14 @@ def search_videos():
                 html_content += f"""
                     <div class="pagination">
                         <form method="post" style="display:inline;">
-                            <input type="hidden" name="query" value="{{query}}">
+                            <input type="hidden" name="query" value="{query}">
                             <input type="hidden" name="video_page" value="{video_page}">
                             <input type="hidden" name="channel_page" value="{channel_page - 1}">
                             <button type="submit" {"disabled" if channel_page == 1 else ""}>前のページ</button>
                         </form>
                         <span>ページ {channel_page}</span>
                         <form method="post" style="display:inline;">
-                            <input type="hidden" name="query" value="{{query}}">
+                            <input type="hidden" name="query" value="{query}">
                             <input type="hidden" name="video_page" value="{video_page}">
                             <input type="hidden" name="channel_page" value="{channel_page + 1}">
                             <button type="submit">次のページ</button>
