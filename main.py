@@ -34,10 +34,19 @@ def require_auth():
 def search_videos():
     if request.method == 'POST':
         query = request.form.get('query')
+        page = request.form.get('page', '1')  # Default to page 1
         if not query:
             return "検索キーワードを入力してください", 400
-        # Invidious APIで動画を検索
-        search_url = f"{INVIDIOUS_API_URL}/search?q={query}&type=video"
+
+        try:
+            page = int(page)
+            if page < 1:
+                page = 1
+        except ValueError:
+            page = 1
+
+        # Invidious APIで動画を検索（ページ番号を追加）
+        search_url = f"{INVIDIOUS_API_URL}/search?q={query}&type=video&page={page}"
         try:
             response = requests.get(search_url)
             response.raise_for_status()
@@ -55,16 +64,19 @@ def search_videos():
                     body { text-align: center; }
                     .result { margin: 20px; text-align: left; display: inline-block; }
                     img { width: 120px; height: auto; float: left; margin-right: 10px; }
+                    .pagination { margin-top: 20px; }
+                    .pagination button { margin: 0 10px; }
                 </style>
             </head>
             <body>
                 <h1>Search</h1>
                 <form method="post">
-                    <input type="text" name="query" placeholder="検索キーワードを入力">
+                    <input type="text" name="query" placeholder="検索キーワードを入力" value="{{query}}">
                     <input type="submit" value="検索">
                 </form>
                 <h2>検索結果</h2>
-            """
+            """.replace("{{query}}", query)
+
             for video in results[:40]:
                 video_id = video.get('videoId')
                 title = video.get('title')
@@ -81,10 +93,30 @@ def search_videos():
                     </a>
                 </div>
                 """
+
+            # ページネーション用のボタンを追加
             html_content += """
+            <div class="pagination">
+                <form method="post" style="display:inline;">
+                    <input type="hidden" name="query" value="{{query}}">
+                    <input type="hidden" name="page" value="{{prev_page}}">
+                    <button type="submit" {{prev_disabled}}>前のページ</button>
+                </form>
+                <span>ページ {{current_page}}</span>
+                <form method="post" style="display:inline;">
+                    <input type="hidden" name="query" value="{{query}}">
+                    <input type="hidden" name="page" value="{{next_page}}">
+                    <button type="submit">次のページ</button>
+                </form>
+            </div>
             </body>
             </html>
-            """
+            """.replace("{{query}}", query)\
+               .replace("{{prev_page}}", str(page - 1))\
+               .replace("{{next_page}}", str(page + 1))\
+               .replace("{{current_page}}", str(page))\
+               .replace("{{prev_disabled}}", 'disabled' if page == 1 else '')
+
             return render_template_string(html_content)
 
         except requests.exceptions.RequestException as e:
@@ -110,7 +142,6 @@ def search_videos():
     </html>
     """
     return render_template_string(html_content)
-
 @app.route('/w', methods=['GET', 'POST'])
 def get_stream_url():
     param_id = request.args.get('id')
