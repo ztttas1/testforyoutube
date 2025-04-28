@@ -76,13 +76,13 @@ def search_videos():
                 <style>
                     body { text-align: center; font-family: Arial, sans-serif; }
                     .container { max-width: 1200px; margin: 0 auto; }
-                    .result, .channel { margin: 20px; text-align: left; display: inline-block; vertical-align: top; }
-                    img { width: 120px; height: auto; float: left; margin-right: 10px; }
-                    .channel img { border-radius: 50%; }
+                    .result, .channel { margin: 20px; text-align: left; display: inline-block; vertical-align: top; width: 300px; }
+                    .result img { width: 120px; height: auto; float: left; margin-right: 10px; }
+                    .channel img { width: 80px; height: 80px; border-radius: 50%; float: left; margin-right: 10px; }
                     .section { margin: 40px 0; }
                     .pagination { margin-top: 20px; text-align: center; }
                     .pagination button { margin: 0 10px; padding: 10px 20px; }
-                    .description { max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                    .description { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
                 </style>
             </head>
             <body>
@@ -99,11 +99,13 @@ def search_videos():
                     <div class="section">
                         <h2>動画検索結果</h2>
             """
-            if video_results:
+            if video_results and isinstance(video_results, list):
                 for video in video_results[:20]:  # 最大20件表示
+                    if video.get('type') != 'video':  # 動画タイプのみ処理
+                        continue
                     video_id = video.get('videoId')
-                    title = video.get('title')
-                    thumbnails = video.get('videoThumbnails')
+                    title = video.get('title', 'No Title')
+                    thumbnails = video.get('videoThumbnails', [])
                     thumbnail_url = f"https://img.youtube.com/vi/{video_id}/0.jpg" if thumbnails else "https://via.placeholder.com/120"
                     html_content += f"""
                     <div class="result">
@@ -113,7 +115,6 @@ def search_videos():
                         </a>
                     </div>
                     """
-
                 # 動画のページネーション
                 html_content += f"""
                     <div class="pagination">
@@ -140,12 +141,14 @@ def search_videos():
                     <div class="section">
                         <h2>チャンネル検索結果</h2>
             """
-            if channel_results:
+            if channel_results and isinstance(channel_results, list):
                 for channel in channel_results[:20]:  # 最大20件表示
+                    if channel.get('type') != 'channel':  # チャンネルタイプのみ処理
+                        continue
                     channel_id = channel.get('authorId')
-                    channel_name = channel.get('author')
+                    channel_name = channel.get('author', 'Unknown Channel')
                     description = channel.get('description', 'No description')
-                    thumbnail_url = channel.get('authorThumbnails', [{}])[-1].get('url', 'https://via.placeholder.com/120')
+                    thumbnail_url = channel.get('authorThumbnails', [{}])[-1].get('url', 'https://via.placeholder.com/80')
                     html_content += f"""
                     <div class="channel">
                         <a href="/c?id={channel_id}">
@@ -155,7 +158,6 @@ def search_videos():
                         </a>
                     </div>
                     """
-
                 # チャンネルのページネーション
                 html_content += f"""
                     <div class="pagination">
@@ -180,9 +182,10 @@ def search_videos():
             html_content += """
                     </div>
                 </div>
+                <p>製作:ztttas1 | 動画:わかめtube | 検索:Invidious | Version:{{ver}}</p>
             </body>
             </html>
-            """
+            """.replace("{{ver}}", ver)
 
             return render_template_string(html_content)
 
