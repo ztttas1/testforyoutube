@@ -34,38 +34,25 @@ def require_auth():
 def search_videos():
     if request.method == 'POST':
         query = request.form.get('query')
-        video_page = request.form.get('video_page', '1')  # 動画のページ
-        channel_page = request.form.get('channel_page', '1')  # チャンネルのページ
+        page = request.form.get('page', '1')  # Default to page 1
         if not query:
             return "検索キーワードを入力してください", 400
 
         try:
-            video_page = int(video_page)
-            channel_page = int(channel_page)
-            if video_page < 1:
-                video_page = 1
-            if channel_page < 1:
-                channel_page = 1
+            page = int(page)
+            if page < 1:
+                page = 1
         except ValueError:
-            video_page = 1
-            channel_page = 1
+            page = 1
 
-        # Invidious APIで動画とチャンネルを検索
-        video_search_url = f"{INVIDIOUS_API_URL}/search?q={query}&type=video&page={video_page}"
-        channel_search_url = f"{INVIDIOUS_API_URL}/search?q={query}&type=channel&page={channel_page}"
-
+        # Invidious APIで動画とチャンネルを検索（type=allで両方を含む）
+        search_url = f"{INVIDIOUS_API_URL}/search?q={query}&type=all&page={page}"
         try:
-            # 動画検索
-            video_response = requests.get(video_search_url)
-            video_response.raise_for_status()
-            video_results = video_response.json()
+            response = requests.get(search_url)
+            response.raise_for_status()
+            results = response.json()
 
-            # チャンネル検索
-            channel_response = requests.get(channel_search_url)
-            channel_response.raise_for_status()
-            channel_results = channel_response.json()
-
-            # HTMLテンプレート
+            # 検索結果をHTMLで表示
             html_content = """
             <!doctype html>
             <html lang="ja">
@@ -74,39 +61,34 @@ def search_videos():
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Search</title>
                 <style>
-                    body { text-align: center; font-family: Arial, sans-serif; }
-                    .container { max-width: 1200px; margin: 0 auto; }
-                    .result, .channel { margin: 20px; text-align: left; display: inline-block; vertical-align: top; width: 300px; }
-                    .result img { width: 120px; height: auto; float: left; margin-right: 10px; }
-                    .channel img { width: 80px; height: 80px; border-radius: 50%; float: left; margin-right: 10px; }
-                    .section { margin: 40px 0; }
-                    .pagination { margin-top: 20px; text-align: center; }
-                    .pagination button { margin: 0 10px; padding: 10px 20px; }
-                    .description { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                    body { text-align: center; }
+                    .result { margin: 20px; text-align: left; display: inline-block; }
+                    img { width: 120px; height: auto; float: left; margin-right: 10px; }
+                    .pagination { margin-top: 20px; }
+                    .pagination button { margin: 0 10px; }
                 </style>
             </head>
             <body>
-                <div class="container">
-                    <h1>Search</h1>
-                    <form method="post">
-                        <input type="text" name="query" placeholder="検索キーワードを入力" value="{{query}}">
-                        <input type="submit" value="検索">
-                    </form>
+                <h1>Search</h1>
+                <form method="post">
+                    <input type="text" name="query" placeholder="検索キーワードを入力" value="{{query}}">
+                    <input type="submit" value="検索">
+                </form>
+                <h2>検索結果</h2>
             """.replace("{{query}}", query)
 
-            # 動画検索結果
-            html_content += """
-                    <div class="section">
-                        <h2>動画検索結果</h2>
-            """
-            if video_results and isinstance(video_results, list):
-                for video in video_results[:20]:  # 最大20件表示
-                    if video.get('type') != 'video':  # 動画タイプのみ処理
-                        continue
-                    video_id = video.get('videoId')
-                    title = video.get('title', 'No Title')
-                    thumbnails = video.get('videoThumbnails', [])
-                    thumbnail_url = f"https://img.youtube.com/vi/{video_id}/0.jpg" if thumbnails else "https://via.placeholder.com/120"
+            for item in results[:40]:  # 最大40件表示
+                item_type = item.get('type')
+                
+                if item_type == 'video':
+                    # 動画の場合
+                    video_id = item.get('videoId')
+                    title = item.get('title')
+                    thumbnails = item.get('videoThumbnails')
+                    if thumbnails and len(thumbnails) > 0:
+                        thumbnail_url = f"https://img.youtube.com/vi/{video_id}/0.jpg"
+                    else:
+                        thumbnail_url = "https://via.placeholder.com/120"  # デフォルト画像
                     html_content += f"""
                     <div class="result">
                         <a href="/w?id={video_id}">
@@ -115,77 +97,47 @@ def search_videos():
                         </a>
                     </div>
                     """
-                # 動画のページネーション
-                html_content += f"""
-                    <div class="pagination">
-                        <form method="post" style="display:inline;">
-                            <input type="hidden" name="query" value="{{query}}">
-                            <input type="hidden" name="video_page" value="{video_page - 1}">
-                            <input type="hidden" name="channel_page" value="{channel_page}">
-                            <button type="submit" {"disabled" if video_page == 1 else ""}>前のページ</button>
-                        </form>
-                        <span>ページ {video_page}</span>
-                        <form method="post" style="display:inline;">
-                            <input type="hidden" name="query" value="{{query}}">
-                            <input type="hidden" name="video_page" value="{video_page + 1}">
-                            <input type="hidden" name="channel_page" value="{channel_page}">
-                            <button type="submit">次のページ</button>
-                        </form>
-                    </div>
-                """
-            else:
-                html_content += "<p>動画が見つかりませんでした。</p>"
-
-            # チャンネル検索結果
-            html_content += """
-                    <div class="section">
-                        <h2>チャンネル検索結果</h2>
-            """
-            if channel_results and isinstance(channel_results, list):
-                for channel in channel_results[:20]:  # 最大20件表示
-                    if channel.get('type') != 'channel':  # チャンネルタイプのみ処理
-                        continue
-                    channel_id = channel.get('authorId')
-                    channel_name = channel.get('author', 'Unknown Channel')
-                    description = channel.get('description', 'No description')
-                    thumbnail_url = channel.get('authorThumbnails', [{}])[-1].get('url', 'https://via.placeholder.com/80')
+                elif item_type == 'channel':
+                    # チャンネルの場合
+                    channel_id = item.get('authorId')
+                    channel_name = item.get('author')
+                    thumbnails = item.get('authorThumbnails')
+                    if thumbnails and len(thumbnails) > 0:
+                        # 最大のサムネイルを選択（最後の要素が通常高解像度）
+                        thumbnail_url = thumbnails[-1].get('url', 'https://via.placeholder.com/120')
+                    else:
+                        thumbnail_url = "https://via.placeholder.com/120"  # デフォルト画像
                     html_content += f"""
-                    <div class="channel">
+                    <div class="result">
                         <a href="/c?id={channel_id}">
                             <img src="{thumbnail_url}" alt="channel thumbnail">
                             <p><strong>{channel_name}</strong></p>
-                            <p class="description">{description}</p>
                         </a>
                     </div>
                     """
-                # チャンネルのページネーション
-                html_content += f"""
-                    <div class="pagination">
-                        <form method="post" style="display:inline;">
-                            <input type="hidden" name="query" value="{query}">
-                            <input type="hidden" name="video_page" value="{video_page}">
-                            <input type="hidden" name="channel_page" value="{channel_page - 1}">
-                            <button type="submit" {"disabled" if channel_page == 1 else ""}>前のページ</button>
-                        </form>
-                        <span>ページ {channel_page}</span>
-                        <form method="post" style="display:inline;">
-                            <input type="hidden" name="query" value="{query}">
-                            <input type="hidden" name="video_page" value="{video_page}">
-                            <input type="hidden" name="channel_page" value="{channel_page + 1}">
-                            <button type="submit">次のページ</button>
-                        </form>
-                    </div>
-                """
-            else:
-                html_content += "<p>チャンネルが見つかりませんでした。</p>"
 
+            # ページネーション用のボタンを追加
             html_content += """
-                    </div>
-                </div>
-                <p>製作:ztttas1 | 動画:わかめtube | 検索:Invidious | Version:{{ver}}</p>
+            <div class="pagination">
+                <form method="post" style="display:inline;">
+                    <input type="hidden" name="query" value="{{query}}">
+                    <input type="hidden" name="page" value="{{prev_page}}">
+                    <button type="submit" {{prev_disabled}}>前のページ</button>
+                </form>
+                <span>ページ {{current_page}}</span>
+                <form method="post" style="display:inline;">
+                    <input type="hidden" name="query" value="{{query}}">
+                    <input type="hidden" name="page" value="{{next_page}}">
+                    <button type="submit">次のページ</button>
+                </form>
+            </div>
             </body>
             </html>
-            """.replace("{{ver}}", ver)
+            """.replace("{{query}}", query)\
+               .replace("{{prev_page}}", str(page - 1))\
+               .replace("{{next_page}}", str(page + 1))\
+               .replace("{{current_page}}", str(page))\
+               .replace("{{prev_disabled}}", 'disabled' if page == 1 else '')
 
             return render_template_string(html_content)
 
