@@ -45,8 +45,8 @@ def search_videos():
         except ValueError:
             page = 1
 
-        # Invidious APIで動画を検索（ページ番号を追加）
-        search_url = f"{INVIDIOUS_API_URL}/search?q={query}&type=video&page={page}"
+        # Invidious APIで動画とチャンネルを検索（type=allで両方を含む）
+        search_url = f"{INVIDIOUS_API_URL}/search?q={query}&type=all&page={page}"
         try:
             response = requests.get(search_url)
             response.raise_for_status()
@@ -77,22 +77,44 @@ def search_videos():
                 <h2>検索結果</h2>
             """.replace("{{query}}", query)
 
-            for video in results[:40]:
-                video_id = video.get('videoId')
-                title = video.get('title')
-                thumbnails = video.get('videoThumbnails')
-                if thumbnails and len(thumbnails) > 0:
-                    thumbnail_url = f"https://img.youtube.com/vi/{video_id}/0.jpg"
-                else:
-                    thumbnail_url = "https://via.placeholder.com/120"  # デフォルト画像
-                html_content += f"""
-                <div class="result">
-                    <a href="/w?id={video_id}">
-                        <img src="{thumbnail_url}" alt="thumbnail">
-                        <p><strong>{title}</strong></p>
-                    </a>
-                </div>
-                """
+            for item in results[:40]:  # 最大40件表示
+                item_type = item.get('type')
+                
+                if item_type == 'video':
+                    # 動画の場合
+                    video_id = item.get('videoId')
+                    title = item.get('title')
+                    thumbnails = item.get('videoThumbnails')
+                    if thumbnails and len(thumbnails) > 0:
+                        thumbnail_url = f"https://img.youtube.com/vi/{video_id}/0.jpg"
+                    else:
+                        thumbnail_url = "https://via.placeholder.com/120"  # デフォルト画像
+                    html_content += f"""
+                    <div class="result">
+                        <a href="/w?id={video_id}">
+                            <img src="{thumbnail_url}" alt="thumbnail">
+                            <p><strong>{title}</strong></p>
+                        </a>
+                    </div>
+                    """
+                elif item_type == 'channel':
+                    # チャンネルの場合
+                    channel_id = item.get('authorId')
+                    channel_name = item.get('author')
+                    thumbnails = item.get('authorThumbnails')
+                    if thumbnails and len(thumbnails) > 0:
+                        # 最大のサムネイルを選択（最後の要素が通常高解像度）
+                        thumbnail_url = thumbnails[-1].get('url', 'https://via.placeholder.com/120')
+                    else:
+                        thumbnail_url = "https://via.placeholder.com/120"  # デフォルト画像
+                    html_content += f"""
+                    <div class="result">
+                        <a href="/c?id={channel_id}">
+                            <img src="{thumbnail_url}" alt="channel thumbnail">
+                            <p><strong>{channel_name}</strong></p>
+                        </a>
+                    </div>
+                    """
 
             # ページネーション用のボタンを追加
             html_content += """
