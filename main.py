@@ -63,43 +63,34 @@ def search_videos():
                 <style>
                     body { text-align: center; font-family: Arial, sans-serif; }
                     .container { max-width: 1200px; margin: 0 auto; text-align: left; }
-                    .results { 
+                    .videos { 
                         display: grid; 
                         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
                         gap: 20px; 
-                        margin: 20px 0; 
                     }
-                    .result { text-align: left; }
-                    .result img { 
+                    .video { text-align: left; }
+                    .video img { 
                         width: 100%; 
                         height: auto; 
                         aspect-ratio: 16 / 9; 
                         object-fit: cover; 
-                        border-radius: 8px; 
                     }
-                    .result p { 
-                        margin: 5px 0 0; 
-                        font-size: 14px; 
-                        line-height: 1.4; 
-                        color: #333; 
-                    }
-                    .result a { 
+                    .video a { 
                         text-decoration: none; 
                         color: inherit; 
                     }
-                    .pagination { margin-top: 20px; text-align: center; }
+                    .video p { 
+                        margin: 5px 0 0; 
+                        font-size: 14px; 
+                        line-height: 1.4; 
+                    }
+                    .pagination { 
+                        margin: 20px 0; 
+                        text-align: center; 
+                    }
                     .pagination button { 
                         margin: 0 10px; 
                         padding: 10px 20px; 
-                        background-color: #007bff; 
-                        color: white; 
-                        border: none; 
-                        border-radius: 5px; 
-                        cursor: pointer; 
-                    }
-                    .pagination button:disabled { 
-                        background-color: #cccccc; 
-                        cursor: not-allowed; 
                     }
                 </style>
             </head>
@@ -111,7 +102,7 @@ def search_videos():
                         <input type="submit" value="検索">
                     </form>
                     <h2>検索結果</h2>
-                    <div class="results">
+                    <div class="videos">
             """.replace("{{query}}", query)
 
             for item in results[:40]:  # 最大40件表示
@@ -127,9 +118,9 @@ def search_videos():
                     else:
                         thumbnail_url = "https://via.placeholder.com/120"  # デフォルト画像
                     html_content += f"""
-                    <div class="result">
+                    <div class="video">
                         <a href="/w?id={video_id}">
-                            <img src="{thumbnail_url}" alt="thumbnail">
+                            <img src="{thumbnail_url}" alt="Video Thumbnail">
                             <p><strong>{title}</strong></p>
                         </a>
                     </div>
@@ -140,29 +131,28 @@ def search_videos():
                     channel_name = item.get('author')
                     thumbnails = item.get('authorThumbnails')
                     if thumbnails and len(thumbnails) > 0:
-                        # 最大のサムネイルを選択（最後の要素が通常高解像度）
                         thumbnail_url = thumbnails[-1].get('url', 'https://via.placeholder.com/120')
                     else:
                         thumbnail_url = "https://via.placeholder.com/120"  # デフォルト画像
                     html_content += f"""
-                    <div class="result">
+                    <div class="video">
                         <a href="/c?id={channel_id}">
-                            <img src="{thumbnail_url}" alt="channel thumbnail">
+                            <img src="{thumbnail_url}" alt="Channel Thumbnail">
                             <p><strong>{channel_name}</strong></p>
                         </a>
                     </div>
                     """
 
             # ページネーション用のボタンを追加
-            html_content += """
+            html_content += f"""
                     </div>
                     <div class="pagination">
                         <form method="post" style="display:inline;">
                             <input type="hidden" name="query" value="{{query}}">
                             <input type="hidden" name="page" value="{{prev_page}}">
-                            <button type="submit" {{prev_disabled}}>前のページ</button>
+                            <button type="submit" {"disabled" if page == 1 else ""}>前のページ</button>
                         </form>
-                        <span>ページ {{current_page}}</span>
+                        <span>ページ {page}</span>
                         <form method="post" style="display:inline;">
                             <input type="hidden" name="query" value="{{query}}">
                             <input type="hidden" name="page" value="{{next_page}}">
@@ -172,11 +162,7 @@ def search_videos():
                 </div>
             </body>
             </html>
-            """.replace("{{query}}", query)\
-               .replace("{{prev_page}}", str(page - 1))\
-               .replace("{{next_page}}", str(page + 1))\
-               .replace("{{current_page}}", str(page))\
-               .replace("{{prev_disabled}}", 'disabled' if page == 1 else '')
+            """
 
             return render_template_string(html_content)
 
