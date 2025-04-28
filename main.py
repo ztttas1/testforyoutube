@@ -61,20 +61,57 @@ def search_videos():
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Search</title>
                 <style>
-                    body { text-align: center; }
-                    .result { margin: 20px; text-align: left; display: inline-block; }
-                    img { width: 120px; height: auto; float: left; margin-right: 10px; }
-                    .pagination { margin-top: 20px; }
-                    .pagination button { margin: 0 10px; }
+                    body { text-align: center; font-family: Arial, sans-serif; }
+                    .container { max-width: 1200px; margin: 0 auto; text-align: left; }
+                    .results { 
+                        display: grid; 
+                        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+                        gap: 20px; 
+                        margin: 20px 0; 
+                    }
+                    .result { text-align: left; }
+                    .result img { 
+                        width: 100%; 
+                        height: auto; 
+                        aspect-ratio: 16 / 9; 
+                        object-fit: cover; 
+                        border-radius: 8px; 
+                    }
+                    .result p { 
+                        margin: 5px 0 0; 
+                        font-size: 14px; 
+                        line-height: 1.4; 
+                        color: #333; 
+                    }
+                    .result a { 
+                        text-decoration: none; 
+                        color: inherit; 
+                    }
+                    .pagination { margin-top: 20px; text-align: center; }
+                    .pagination button { 
+                        margin: 0 10px; 
+                        padding: 10px 20px; 
+                        background-color: #007bff; 
+                        color: white; 
+                        border: none; 
+                        border-radius: 5px; 
+                        cursor: pointer; 
+                    }
+                    .pagination button:disabled { 
+                        background-color: #cccccc; 
+                        cursor: not-allowed; 
+                    }
                 </style>
             </head>
             <body>
-                <h1>Search</h1>
-                <form method="post">
-                    <input type="text" name="query" placeholder="検索キーワードを入力" value="{{query}}">
-                    <input type="submit" value="検索">
-                </form>
-                <h2>検索結果</h2>
+                <div class="container">
+                    <h1>Search</h1>
+                    <form method="post">
+                        <input type="text" name="query" placeholder="検索キーワードを入力" value="{{query}}">
+                        <input type="submit" value="検索">
+                    </form>
+                    <h2>検索結果</h2>
+                    <div class="results">
             """.replace("{{query}}", query)
 
             for item in results[:40]:  # 最大40件表示
@@ -118,19 +155,21 @@ def search_videos():
 
             # ページネーション用のボタンを追加
             html_content += """
-            <div class="pagination">
-                <form method="post" style="display:inline;">
-                    <input type="hidden" name="query" value="{{query}}">
-                    <input type="hidden" name="page" value="{{prev_page}}">
-                    <button type="submit" {{prev_disabled}}>前のページ</button>
-                </form>
-                <span>ページ {{current_page}}</span>
-                <form method="post" style="display:inline;">
-                    <input type="hidden" name="query" value="{{query}}">
-                    <input type="hidden" name="page" value="{{next_page}}">
-                    <button type="submit">次のページ</button>
-                </form>
-            </div>
+                    </div>
+                    <div class="pagination">
+                        <form method="post" style="display:inline;">
+                            <input type="hidden" name="query" value="{{query}}">
+                            <input type="hidden" name="page" value="{{prev_page}}">
+                            <button type="submit" {{prev_disabled}}>前のページ</button>
+                        </form>
+                        <span>ページ {{current_page}}</span>
+                        <form method="post" style="display:inline;">
+                            <input type="hidden" name="query" value="{{query}}">
+                            <input type="hidden" name="page" value="{{next_page}}">
+                            <button type="submit">次のページ</button>
+                        </form>
+                    </div>
+                </div>
             </body>
             </html>
             """.replace("{{query}}", query)\
