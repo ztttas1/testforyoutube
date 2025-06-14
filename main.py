@@ -212,6 +212,7 @@ def get_stream_url():
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Video</title>
+                <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
                 <style>
                     body {{ text-align: center; }}
                     img {{ width: 100px; height: auto; }}
