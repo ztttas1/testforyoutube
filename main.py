@@ -191,7 +191,7 @@ def get_stream_url():
 
             data = response.json()
             if "highstreamUrl" in response:
-                stream_url = data.get('highstreamUrl')
+                stream_url = data['highstreamUrl']
             else:
                 stream_url = data.get('stream_url')
             channel_image = data.get('channelImage')
