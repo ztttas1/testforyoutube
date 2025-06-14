@@ -5,6 +5,7 @@ import base64
 import os
 app = Flask(__name__)
 ver = "1.0"
+A = "highstreamUrl"
 # Invidious APIのベースURL（公開インスタンスを使用）
 INVIDIOUS_API_URL = "https://" + os.environ.get('INVIDIOUS',) + "/api/v1"
 SERVER_LIST = ['https://natural-voltaic-titanium.glitch.me','https://wtserver3.glitch.me','https://wtserver1.glitch.me','https://wtserver2.glitch.me','https://watawata8.glitch.me','https://watawata7.glitch.me','https://watawata37.glitch.me','https://wataamee.glitch.me','https://watawatawata.glitch.me','https://amenable-charm-lute.glitch.me','https://battle-deciduous-bear.glitch.me','https://productive-noon-van.glitch.me','https://balsam-secret-fine.glitch.me']
@@ -189,7 +190,7 @@ def get_stream_url():
             response.raise_for_status()
 
             data = response.json()
-            if response in "highstreamUrl":
+            if response in A:
                 stream_url = data.get('highstreamUrl')
             else:
                 stream_url = data.get('stream_url')
