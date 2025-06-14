@@ -189,8 +189,8 @@ def get_stream_url():
             response.raise_for_status()
 
             data = response.json()
-            if response in "heighstreamUrl":
-                stream_url = data.get('heighstreamUrl')
+            if response in "highstreamUrl":
+                stream_url = data.get('highstreamUrl')
             else:
                 stream_url = data.get('stream_url')
             channel_image = data.get('channelImage')
