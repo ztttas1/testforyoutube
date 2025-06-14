@@ -294,6 +294,7 @@ def get_stream_url():
                 <input type="hidden" name="id" value="{param_id}">
                 <input type="submit" value="サーバー変更">
             </form>
+            ｛stream_url｝
         </body>
         </html>
         """
