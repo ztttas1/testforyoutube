@@ -277,7 +277,7 @@ def get_stream_url():
         </head>
         <body>
             <video width="640" height="360" controls>
-                <source src="{stream_url}" type="video/mp4">
+                <source src="{stream_url}">
                 お使いのブラウザは動画タグに対応していません。
             </video>
             <div class="container">
