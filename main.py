@@ -211,7 +211,7 @@ def get_stream_url():
             </head>
             <body>
                 <video width="640" height="360" controls>
-                    <source src="{stream_url}" type="video/mp4">
+                    <source src="{stream_url}">
                     お使いのブラウザは動画タグに対応していません。
                 </video>
                 <div class="container">
@@ -228,6 +228,7 @@ def get_stream_url():
                     <input type="hidden" name="id" value="{param_id}">
                     <input type="submit" value="サーバー変更">
                 </form>
+                <p>{stream_url}</p>
             </body>
             </html>
             """
