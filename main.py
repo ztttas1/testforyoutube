@@ -190,9 +190,9 @@ def get_stream_url():
 
             data = response.json()
             if response in "highstreamUrl":
-            　　stream_url = data.get('highstreamUrl')
+                stream_url = data.get('highstreamUrl')
             else:
-            　　stream_url = data.get('stream_url')
+                stream_url = data.get('stream_url')
             channel_image = data.get('channelImage')
             channel_name = data.get('channelName')
             video_des = data.get('videoDes')
