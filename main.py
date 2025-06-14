@@ -192,8 +192,10 @@ def get_stream_url():
             data = response.json()
             if "highstreamUrl" in response:
                 stream_url = data['highstreamUrl']
+                videotype = "live"
             else:
                 stream_url = data.get('stream_url')
+                videotype = "video"
             channel_image = data.get('channelImage')
             channel_name = data.get('channelName')
             video_des = data.get('videoDes')
@@ -231,7 +233,7 @@ def get_stream_url():
                     <input type="hidden" name="id" value="{param_id}">
                     <input type="submit" value="サーバー変更">
                 </form>
-                <p>{stream_url}</p>
+                <p>{videotype}:{stream_url}</p>
             </body>
             </html>
             """
@@ -259,8 +261,10 @@ def get_stream_url():
         data = response.json()
         if "highstreamUrl" in response:
             stream_url = data.get('highstreamUrl')
+            videotype = "live"
         else:
             stream_url = data.get('stream_url')
+            videotype = "video"
         channel_image = data.get('channelImage')
         channel_name = data.get('channelName')
         video_des = data.get('videoDes')
