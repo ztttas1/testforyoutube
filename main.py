@@ -190,11 +190,11 @@ def get_stream_url():
             response.raise_for_status()
 
             data = response.json()
-            if "highstreamUrl" in response:
+            stream_url = data.get('stream_url')
+            if stream_url == None:
                 stream_url = data['highstreamUrl']
                 videotype = "live"
             else:
-                stream_url = data.get('stream_url')
                 videotype = "video"
             channel_image = data.get('channelImage')
             channel_name = data.get('channelName')
