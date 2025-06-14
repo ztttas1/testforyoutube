@@ -190,7 +190,7 @@ def get_stream_url():
             response.raise_for_status()
 
             data = response.json()
-            if response in "highstreamUrl":
+            if "highstreamUrl" in response:
                 stream_url = data.get('highstreamUrl')
             else:
                 stream_url = data.get('stream_url')
@@ -257,7 +257,7 @@ def get_stream_url():
         response.raise_for_status()
 
         data = response.json()
-        if response in "highstreamUrl":
+        if "highstreamUrl" in response:
             stream_url = data.get('highstreamUrl')
         else:
             stream_url = data.get('stream_url')
