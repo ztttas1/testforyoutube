@@ -196,6 +196,10 @@ def get_stream_url():
                 videotype = "live"
             else:
                 videotype = "video"
+            if videotype == "live":
+                videok = "application/vnd.apple.mpegurl"
+            else:
+                videok = "video/mp4"
             channel_image = data.get('channelImage')
             channel_name = data.get('channelName')
             video_des = data.get('videoDes')
@@ -216,7 +220,7 @@ def get_stream_url():
             </head>
             <body>
                 <video width="640" height="360" controls>
-                    <source src="{stream_url}">
+                    <source src="{stream_url}" type="{videok}">
                     お使いのブラウザは動画タグに対応していません。
                 </video>
                 <div class="container">
