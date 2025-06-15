@@ -8,7 +8,7 @@ ver = "1.0"
 A = "highstreamUrl"
 # Invidious APIのベースURL（公開インスタンスを使用）
 INVIDIOUS_API_URL = "https://" + os.environ.get('INVIDIOUS',) + "/api/v1"
-SERVER_LIST = ['https://natural-voltaic-titanium.glitch.me','https://wtserver3.glitch.me','https://wtserver1.glitch.me','https://wtserver2.glitch.me','https://watawata8.glitch.me','https://watawata7.glitch.me','https://watawata37.glitch.me','https://wataamee.glitch.me','https://watawatawata.glitch.me','https://amenable-charm-lute.glitch.me','https://battle-deciduous-bear.glitch.me','https://productive-noon-van.glitch.me','https://balsam-secret-fine.glitch.me']
+SERVER_LIST = ["https://wtserver1.glitch.me","https://wtserver2.glitch.me","https://wtserver3.glitch.me","https://wtserver7.glitch.me","https://wtserver8.glitch.me","https://wtserver37.glitch.me","https://natural-voltaic-titanium.glitch.me","https://wataamee.glitch.me","https://watawatawata.glitch.me","https://amenable-charm-lute.glitch.me","https://battle-deciduous-bear.glitch.me","https://productive-noon-van.glitch.me","https://balsam-secret-fine.glitch.me"]
 # BASIC認証のユーザー名とパスワード
 USERNAME = os.environ.get('USERNAME', 'ztttas1')
 PASSWORD = os.environ.get('PASSWORD', 'pas')
