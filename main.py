@@ -303,7 +303,7 @@ def get_stream_url():
                 <input type="hidden" name="id" value="{param_id}">
                 <input type="submit" value="サーバー変更">
             </form>
-            <p>{stream_url}</p>
+            <p>{videotype}:{stream_url}</p>
         </body>
         </html>
         """
